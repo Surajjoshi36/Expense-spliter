@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Splitter</title>
+    <style>
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>Expense Splitter</h1>
+
+    <h2>Add Participant</h2>
+    <form id="addParticipantForm">
+        <input type="text" id="participantName" placeholder="Name" required>
+        <button type="submit">Add Participant</button>
+    </form>
+
+    <h2>Add Expense</h2>
+    <form id="addExpenseForm">
+        <input type="text" id="description" placeholder="Description" required>
+        <input type="number" id="amount" placeholder="Amount" required>
+        <input type="text" id="payerName" placeholder="Payer Name" required>
+        <button type="submit">Add Expense</button>
+    </form>
+
+    <h2>Balances</h2>
+    <button id="showBalancesButton">Show Balances</button>
+    <ul id="balancesList"></ul>
+
+    <script>
+        document.getElementById('addParticipantForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const name = document.getElementById('participantName').value;
+            fetch(`/participants/add?name=${name}`, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data));
+        });
+
+        document.getElementById('addExpenseForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const description = document.getElementById('description').value;
+            const amount = document.getElementById('amount').value;
+            const payerName = document.getElementById('payerName').value;
+            fetch(`/expenses/add?description=${description}&amount=${amount}&payerName=${payerName}`, { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data));
+        });
+
+        document.getElementById('showBalancesButton').addEventListener('click', function() {
+            fetch('/expenses/balances')
+                .then(response => response.json())
+                .then(data => {
+                    const balancesList = document.getElementById('balancesList');
+                    balancesList.innerHTML = '';
+                    data.forEach(participant => {
+                        const li = document.createElement('li');
+                        li.textContent = `${participant.name}: ${participant.balance}`;
+                        balancesList.appendChild(li);
+                    });
+                });
+        });
+    </script>
+</body>
+</html>
